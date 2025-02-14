@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { HomePageComponent } from './home-page/home-page.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HomePageComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true,
+  imports: [RouterModule], // Import RouterModule
+  template: `<router-outlet></router-outlet>`, // Load layout
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'explore_angular';
-}
+export class AppComponent {}
+
