@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from './product.service';
-import { CommonModule } from '@angular/common'; // I
+import { SharedModule } from '../shared/shared.module'; // I
 
 @Component({
   selector: 'app-product',
-  imports: [CommonModule],
+  imports: [SharedModule],
   templateUrl: './product.component.html',
   styleUrl: './product.component.scss',
 })

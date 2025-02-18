@@ -1,1 +1,8 @@
-<app-layout></app-layout>
+@switch(userPermission) {
+  @case('admin') {
+    <app-layout23></app-layout23>
+  }
+  @default {
+    <app-visiter-dashboard></app-visiter-dashboard>
+  }
+}

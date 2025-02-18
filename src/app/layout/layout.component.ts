@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, RouterModule } from '@angular/router';
 @Component({
-  selector: 'app-layout',
+  selector: 'app-layout23',
   imports: [RouterModule, RouterOutlet],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss'],

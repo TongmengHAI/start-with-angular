@@ -1,9 +1,9 @@
 import { Component, OnInit  } from '@angular/core';
 import { UserService } from './user.service';
-import { CommonModule } from '@angular/common'; // I
+import { SharedModule } from '../shared/shared.module';
 @Component({
   selector: 'app-user',
-  imports: [CommonModule],
+  imports: [SharedModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.scss',
 })
