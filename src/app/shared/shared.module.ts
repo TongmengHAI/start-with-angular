@@ -1,7 +1,7 @@
 // shared.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { CanDirective } from '../directive/can.directive';
 // Angular Material Modules
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -51,6 +51,7 @@ import { CdkTreeModule } from '@angular/cdk/tree';
 @NgModule({
   imports: [
     CommonModule,
+    CanDirective,
     // Material Modules
     MatAutocompleteModule,
     MatBadgeModule,
@@ -98,7 +99,7 @@ import { CdkTreeModule } from '@angular/cdk/tree';
   ],
   exports: [
     CommonModule,
-    
+    CanDirective,
     // Export Material Modules
     MatAutocompleteModule,
     MatBadgeModule,

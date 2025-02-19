@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { VisiterDashboardComponent } from './visiter-dashboard/visiter-dashboard.component';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -13,6 +14,7 @@ import { VisiterDashboardComponent } from './visiter-dashboard/visiter-dashboard
 export class AppComponent {
   // userPermission = 'admin';
   userPermission = 'user';
+
 
 
 }
