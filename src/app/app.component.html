@@ -1,8 +1,10 @@
-@switch(userPermission) {
-  @case('admin') {
+@switch(isLoggedIn) {
+  @case(true) {
     <app-layout23></app-layout23>
   }
   @default {
-    <app-visiter-dashboard></app-visiter-dashboard>
+    <app-login></app-login>
   }
 }
+
+

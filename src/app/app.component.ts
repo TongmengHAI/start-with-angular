@@ -1,21 +1,24 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
-import { VisiterDashboardComponent } from './visiter-dashboard/visiter-dashboard.component';
+import { LoginComponent } from './auth/login/login.component';
+import { AuthService } from './auth.service';
 
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterModule, LayoutComponent, VisiterDashboardComponent], // Import RouterModule
+  imports: [RouterModule, LayoutComponent, LoginComponent], // Import RouterModule
   templateUrl: './app.component.html', // Load layout
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  // userPermission = 'admin';
-  userPermission = 'user';
+  isLoggedIn = false;
 
-
+  constructor(private authService: AuthService) {
+    if (this.authService.getUser()) {
+      this.isLoggedIn = true;
+    }
+  }
 
 }
 
