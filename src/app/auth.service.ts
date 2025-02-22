@@ -43,4 +43,8 @@ export class AuthService {
   hasAnyPermission(permissions: string[]): boolean {
     return permissions.some((perm) => this.hasPermission(perm));
   }
+
+  isAuthenticated(): boolean {
+    return !!localStorage.getItem('user');
+  }
 }

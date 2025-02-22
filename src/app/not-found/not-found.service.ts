@@ -1,14 +1,16 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import axios from 'axios';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotFoundService {
-  private apiUrl ="http://127.0.0.1:8081";
+  private apiUrl = 'http://127.0.0.1:8081';
 
-  constructor() {}
-
+  constructor(private http: HttpClient) {}
+ 
   async getMessage(): Promise<any[]> {
     try {
       const response = await axios.get<any[]>(this.apiUrl + '/api/notFound');

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { User } from '../user/user.model';
 import { AuthService } from '../auth.service';
@@ -8,13 +8,16 @@ import { AuthService } from '../auth.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   user: User | null = null;
 
-  constructor(private authService: AuthService) {
-    this.authService.currentUser$.subscribe((user) => (this.user = user));
+  constructor(private _authService: AuthService) {
+    this._authService.currentUser$.subscribe((user) => (this.user = user));
   }
 
+  ngOnInit(): void {
+    console.log('Dashboard loaded');
+  }
   loginAsAdmin() {
     const admin: User = {
       id: 1,
@@ -22,7 +25,7 @@ export class DashboardComponent {
       roles: ['admin'],
       permissions: ['edit-posts', 'delete-posts'],
     };
-    this.authService.login(admin);
+    this._authService.login(admin);
   }
 
   loginAsUser() {
@@ -32,10 +35,11 @@ export class DashboardComponent {
       roles: ['user'],
       permissions: ['edit-posts'],
     };
-    this.authService.login(user);
+    this._authService.login(user);
   }
 
   logout() {
-    this.authService.logout();
+    this._authService.logout();
+    window.location.reload();
   }
 }

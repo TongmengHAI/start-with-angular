@@ -17,15 +17,30 @@ export const routes: Routes = [
       { path: 'login', component: LoginComponent },
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // Default route
-      { path: 'dashboard', component: DashboardComponent },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuard]
+      },
       {
         path: 'products',
         component: ProductComponent,
         canActivate: [AuthGuard],
       },
-      { path: 'users', component: UserComponent, canActivate: [AuthGuard] },
-      { path: 'test', component: TestComponent, canActivate: [AuthGuard] },
-      { path: '**', component: NotFoundComponent, canActivate: [AuthGuard] },
+      {
+        path: 'users',
+        component: UserComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'test',
+        component: TestComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: '**',
+        component: NotFoundComponent
+      },
     ],
   },
 ];

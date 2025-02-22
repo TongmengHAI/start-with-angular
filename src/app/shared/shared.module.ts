@@ -48,8 +48,17 @@ import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CdkTableModule } from '@angular/cdk/table';
 import { CdkTreeModule } from '@angular/cdk/tree';
 
+// Angular modules
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+
+
+
 @NgModule({
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    // Angular Modules
     CommonModule,
     CanDirective,
     // Material Modules
@@ -98,6 +107,9 @@ import { CdkTreeModule } from '@angular/cdk/tree';
     CdkTreeModule,
   ],
   exports: [
+    FormsModule,
+    ReactiveFormsModule,
+    // Angular Modules
     CommonModule,
     CanDirective,
     // Export Material Modules

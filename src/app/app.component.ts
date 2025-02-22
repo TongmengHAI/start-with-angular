@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthService } from './auth.service';
-
 
 @Component({
   selector: 'app-root',
@@ -11,14 +10,19 @@ import { AuthService } from './auth.service';
   templateUrl: './app.component.html', // Load layout
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  isLoggedIn = false;
+export class AppComponent implements OnInit {
+  public isLoggedIn = false;
 
   constructor(private authService: AuthService) {
-    if (this.authService.getUser()) {
+
+  }
+
+  ngOnInit(): void {
+
+    this.isLoggedIn = false;
+
+    if (this.authService.isAuthenticated()) {
       this.isLoggedIn = true;
     }
   }
-
 }
-

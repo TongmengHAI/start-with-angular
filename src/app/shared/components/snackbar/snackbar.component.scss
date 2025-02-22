@@ -1,0 +1,18 @@
+
+.custom-snackbar {
+  display: flex;
+  background-color: white;
+  color: black;
+  width: 100%	;
+  .actions {
+    padding-right: 20px;
+  }
+}
+:host {
+  display: flex;
+
+}
+::ng-deep .mat-mdc-snackbar-surface {
+  padding-right: 0 !important;
+}
+
