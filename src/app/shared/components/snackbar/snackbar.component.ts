@@ -13,14 +13,14 @@ import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
-  selector: 'snackbar',
+
+  selector: 'SnackbarTriggerComponent',
+  standalone: true,
   template: '',
   styles: '  ',
   imports: [
     MatButtonModule,
-    MatSnackBarLabel,
-    MatSnackBarActions,
-    MatSnackBarAction,
+
   ],
 })
 export class SnackbarTriggerComponent {
@@ -43,6 +43,8 @@ export class SnackbarTriggerComponent {
 @Component({
   selector: 'snackbar',
   templateUrl: './snackbar.component.html',
+  standalone: true,
+
   styleUrl: './snackbar.component.scss',
   imports: [
     MatButtonModule,

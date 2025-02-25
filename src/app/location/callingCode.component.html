@@ -1,0 +1,63 @@
+<h1 class="text-3xl font-bold mb-5">Calling Code Picker</h1>
+<div class="phonePicker">
+
+  <div class="countryInputSelector">
+    <div class="countryInputMenu flex gap-2" (click)="toggleDropdown()">
+      <span class="countryInputMenuDefaultText">
+        <a class="flex gap-2">
+          <img
+            *ngIf="showFlags"
+            [src]="'data:image/png;base64,' + selectedCountry.flag"
+            class="country-flag"
+            alt="{{ selectedCountry.name }}"
+          />
+          <span
+            ><i>+{{ selectedCountry.callingCode }}</i></span
+          >
+        </a>
+      </span>
+      <div class="countryInputMenuDropdown">▼</div>
+    </div>
+    <div *ngIf="showDropdown" class="countryInputMenuDropdownContent">
+      <div class="countryInputMenuFilter">
+        <input
+          type="text"
+          [(ngModel)]="filterText"
+          placeholder="Filter countries..."
+        />
+      </div>
+      <div class="content">
+        <div
+          *ngFor="let country of filterCountries()"
+          (click)="selectCountry(country)"
+          class="countryInputMenuItem"
+        >
+          <a class="flex gap-2">
+            <span>
+              <img
+                *ngIf="showFlags"
+                [src]="'data:image/png;base64,' + country.flag"
+                class="country-flag"
+                alt="{{ country.name }}"
+              />
+            </span>
+            <span
+              ><i>+{{ country.callingCode }}</i></span
+            >
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <form action="" method="post" [formGroup]="locationForm">
+    <input type="hidden" [value]="selectedCountry.callingCode??a" formControlName="callingCode" />
+    <div class="phoneNumber flex gap-2">
+      <input type="number" formControlName="phoneNumber" placeholder="Phone number" />
+    <button type="submit" mat-stroked-button (click)="onSubmit()">Submit</button>
+
+    </div>
+  </form>
+</div>
+<hr class="my-5">
+
+<app-province></app-province>

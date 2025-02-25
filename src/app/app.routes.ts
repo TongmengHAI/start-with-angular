@@ -8,6 +8,7 @@ import { TestComponent } from './test/test.component';
 import { AuthGuard } from './auth.guard';
 import { RoleGuard } from './role.guard';
 import { LoginComponent } from './auth/login/login.component';
+import { CountryPickerComponent } from './location/callingCode.component';
 
 export const routes: Routes = [
   {
@@ -20,7 +21,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
       },
       {
         path: 'products',
@@ -30,16 +31,17 @@ export const routes: Routes = [
       {
         path: 'users',
         component: UserComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
       },
       {
         path: 'test',
-        component: TestComponent,
-        canActivate: [AuthGuard]
+        component: CountryPickerComponent,
+        // component: TestComponent,
+        canActivate: [AuthGuard],
       },
       {
         path: '**',
-        component: NotFoundComponent
+        component: NotFoundComponent,
       },
     ],
   },
