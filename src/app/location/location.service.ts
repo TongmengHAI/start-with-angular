@@ -17,4 +17,16 @@ export class LocationService {
   getProvinces(): Observable<any> {
     return this.http.get(`${this.baseUrl}/provinces`);
   }
+
+  getProvinceById(id: any): Observable<any> {
+    return this.http.get(`${this.baseUrl}/province/${id}`);
+  }
+
+  getDistrictById(id: any): Observable<any> {
+    return this.http.get(`${this.baseUrl}/district/${id}/communes`);
+  }
+
+  getCommuneById(id: any): Observable<any> {
+    return this.http.get(`${this.baseUrl}/commune/${id}/villages`);
+  }
 }
