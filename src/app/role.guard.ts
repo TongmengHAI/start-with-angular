@@ -6,6 +6,8 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { AuthService } from './auth.service';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +20,8 @@ export class RoleGuard implements CanActivate {
     state: RouterStateSnapshot
   ): boolean {
     const requiredPermission = route.data['permission']; // Get permission from route
-    if (this.authService.hasPermission(requiredPermission)) {
+    console.log(requiredPermission);
+    if (this.authService.hasAnyPermission(requiredPermission)) {
       return true;
     }
 

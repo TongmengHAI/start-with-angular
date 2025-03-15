@@ -37,7 +37,7 @@ export class AuthService {
 
   hasPermission(permission: string): boolean {
     const user = this.getUser();
-    return user ? user.permissions.includes(permission) : false;
+    return user ? user.permissions.includes(permission) : true;
   }
 
   hasAnyPermission(permissions: string[]): boolean {

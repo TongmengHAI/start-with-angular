@@ -21,7 +21,8 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, RoleGuard],
+        data: { permission: ['dashboard'] },
       },
       {
         path: 'products',

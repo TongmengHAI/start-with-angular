@@ -6,7 +6,7 @@ import { SharedModule } from '../../shared.module';
   selector: 'app-my-dialog',
   imports: [MatDialogModule, SharedModule],
   templateUrl: './my-modal.component.html',
-  styleUrl: './my-modalcomponent.scss.',
+  styleUrl: './my-modal.component.scss',
 })
 export class MyModalComponent {
   constructor(private dialogRef: MatDialogRef<MyModalComponent>) {}

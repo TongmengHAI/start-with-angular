@@ -11,7 +11,7 @@ export class UserService {
 
   async getUsers(): Promise<any[]> {
     try {
-      const response = await axios.get<any[]>(this.apiUrl + '/users');
+      const response = await axios.get<any[]>(this.apiUrl + '/user');
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);

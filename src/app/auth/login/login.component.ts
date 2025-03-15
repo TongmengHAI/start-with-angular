@@ -35,9 +35,10 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required],
       roles: [['admin', 'editor']],
       permissions: [['edit-posts', 'delete-posts']],
+      // permissions: [['edit-posts', 'delete-posts','dashboard']],
     });
 
-        const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       this.currentUserSubject.next(JSON.parse(storedUser));
     }
@@ -53,8 +54,6 @@ export class LoginComponent implements OnInit {
       localStorage.removeItem('user');
       this.currentUserSubject.next(null); // Clear user
     }
-
-
 
   // async onSubmit() {
   //   try {

@@ -3,22 +3,20 @@ import { RouterModule } from '@angular/router';
 import { LayoutComponent } from './layout/layout.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthService } from './auth.service';
+import { SharedModule } from './shared/shared.module';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterModule, LayoutComponent, LoginComponent], // Import RouterModule
+  imports: [RouterModule, LayoutComponent, LoginComponent, SharedModule], // Import RouterModule
   templateUrl: './app.component.html', // Load layout
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   public isLoggedIn = false;
+  constructor(private authService: AuthService) {}
 
-  constructor(private authService: AuthService) {
-
-  }
 
   ngOnInit(): void {
-
     this.isLoggedIn = false;
 
     if (this.authService.isAuthenticated()) {

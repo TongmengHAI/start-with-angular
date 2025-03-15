@@ -41,7 +41,7 @@
       >
     </a>
     <ul class="space-y-2 font-medium">
-      <li>
+      <li *can="['dashboard']">
         <a
           routerLink="/dashboard"
           routerLinkActive="active"
@@ -140,7 +140,9 @@
   </div>
 </aside>
 
-<div class="p-4 sm:ml-65">
+<app-skeleton *ngIf="loading"></app-skeleton>
+
+<div *ngIf="!loading" class="p-4 sm:ml-65">
   <div class=" ">
     <router-outlet></router-outlet>
     <!-- This is where the page changes -->
