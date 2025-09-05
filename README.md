@@ -10,7 +10,40 @@ To start a local development server, run:
 ng serve
 ```
 
+
+
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+## JS Report server
+If Angular calls are blocked, enable CORS in `jsreport.config.json`
+```bash
+{
+  "httpPort": 5488,
+  "httpCors": {
+    "enabled": true,
+    "origin": "http://localhost:4200",
+    "methods": ["POST","GET","OPTIONS"],
+    "headers": ["Content-Type","Authorization"]
+  }
+}
+```
+Install a local development server for JS Report, run:
+
+```bash
+npm install -g @jsreport/jsreport-cli
+
+mkdir jsreportapp && cd jsreportapp
+
+jsreport init
+```
+To start a local development server, run:
+
+```bash
+jsreport start
+```
+
+Once the server is running, open your browser and navigate to ` http://localhost:5488/`.
+
 
 ## Code scaffolding
 
