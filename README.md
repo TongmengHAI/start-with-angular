@@ -12,6 +12,17 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+
+## Packages
+
+To start a local development, run:
+
+```bash
+npm i jspdf jspdf-autotable exceljs file-saver dayjs
+npm i --save-dev @types/file-saver
+```
+
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
