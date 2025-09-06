@@ -9,6 +9,12 @@ import autoTable from 'jspdf-autotable';
 // ExcelJS
 import ExcelJS from 'exceljs';
 
+import {
+  BATTAMBANG_BOLD_BASE64,
+  BATTAMBANG_BASE64,
+  BATTAMBANG_THIN_BASE64,
+} from '../../../assets/fonts/fonts';
+
 export type ColumnDef<T = any> = {
   key: keyof T | string;
   header: string;
@@ -26,7 +32,7 @@ export type ReportOptions = {
     orientation?: 'p' | 'l';
     unit?: 'mm' | 'pt' | 'cm' | 'in';
     format?: string | number[]; // e.g. 'a4'
-    font?: string; // e.g. 'helvetica' / custom
+    font?: string; // e.g. 'Times' / custom
     headFillColor?: [number, number, number]; // RGB
   };
   excel?: {
@@ -58,11 +64,23 @@ export class ReportExportService {
     });
 
     // (Optional) register Khmer font
-    // try {
-    //   (doc as any).addFileToVFS(KHMER_TTF_NAME, KHMER_TTF_BASE64.split(',')[1]);
-    //   (doc as any).addFont(KHMER_TTF_NAME, KHMER_FONT_FAMILY, 'normal');
-    //   doc.setFont(KHMER_FONT_FAMILY);
-    // } catch {}
+    try {
+      (doc as any).addFileToVFS(
+        'Battambang-Bold.ttf',
+        BATTAMBANG_BOLD_BASE64.split(',')[1]
+      );
+      (doc as any).addFileToVFS(
+        'Battambang-Regular.ttf',
+        BATTAMBANG_BASE64.split(',')[1]
+      );
+      (doc as any).addFileToVFS(
+        'Battambang-Thin.ttf',
+        BATTAMBANG_BASE64.split(',')[1]
+      );
+      (doc as any).addFont('Battambang-Bold.ttf', 'battambang', 'bold');
+      (doc as any).addFont('Battambang-Regular.ttf', 'battambang', 'normal');
+      (doc as any).addFont('Battambang-Thin.ttf', 'battambang', 'thin');
+    } catch {}
 
     // Header: Logo + Title + Date
     let cursorY = 12;
@@ -74,32 +92,34 @@ export class ReportExportService {
       doc.addImage(opts.logoBase64, 'PNG', 10, 5, 28, 28);
 
       // Title centered
-      doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
-      doc.setFontSize(14);
+      doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+      doc.setFontSize(24);
       doc.text(opts.title, centerX, 16, { align: 'center' });
 
       // Date centered below
-      doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
-      doc.setFontSize(10);
+      doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+      doc.setFontSize(14);
       doc.text(`Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`, centerX, 22, {
         align: 'center',
       });
 
       if (opts.subtitle) {
+        doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+        doc.setFontSize(11);
         doc.text(opts.subtitle, centerX, 28, { align: 'center' });
       }
 
       cursorY = 34;
     } else {
       // Title centered
-      doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
+      doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
       doc.setFontSize(14);
       doc.text(opts.title, centerX, cursorY, { align: 'center' });
       cursorY += 6;
 
       // Date centered
-      doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
-      doc.setFontSize(10);
+      doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+      doc.setFontSize(14);
       doc.text(
         `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`,
         centerX,
@@ -111,6 +131,8 @@ export class ReportExportService {
 
       if (opts.subtitle) {
         cursorY += 6;
+        doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+        doc.setFontSize(11);
         doc.text(opts.subtitle, centerX, cursorY, { align: 'center' });
       }
 
@@ -129,8 +151,8 @@ export class ReportExportService {
       head,
       body,
       styles: {
-        font: opts.pdf?.font ?? 'helvetica',
-        fontSize: 9,
+        font: opts.pdf?.font ?? 'Times',
+        fontSize: 11,
         cellPadding: 2,
       },
       headStyles: {
@@ -154,12 +176,12 @@ export class ReportExportService {
           doc.addImage(opts.logoBase64, 'PNG', 10, 5, 28, 28);
         }
 
-        doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
-        doc.setFontSize(14);
+        doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+        doc.setFontSize(24);
         doc.text(opts.title, centerX, 16, { align: 'center' });
 
-        doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
-        doc.setFontSize(10);
+        doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+        doc.setFontSize(14);
         doc.text(
           `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`,
           centerX,
@@ -170,6 +192,8 @@ export class ReportExportService {
         );
 
         if (opts.subtitle) {
+          doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+          doc.setFontSize(11);
           doc.text(opts.subtitle, centerX, 28, { align: 'center' });
         }
 
@@ -212,7 +236,8 @@ export class ReportExportService {
       y = 20;
     }
 
-    doc.setFontSize(10);
+    doc.setFontSize(11);
+    doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
 
     // helper to draw one block at x
     const drawBlock = (x: number, idx: number) => {
@@ -221,11 +246,11 @@ export class ReportExportService {
       const posPreset = presetPositions[idx] || '';
 
       // Title (bold + center)
-      doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
+      doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
       doc.text(title, x + blockW / 2, y, { align: 'center' });
 
       // lines and labels
-      doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
+      // doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
       const row1Y = y + 25;
       const row2Y = y + 30;
       const row3Y = y + 35;

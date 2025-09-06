@@ -24,7 +24,7 @@ export class ReportsComponent {
 
   rows: Row[] = Array.from({ length: 100 }, (_, i) => {
     const id = i + 1;
-    const name = `ម៉េង User ${id}`;
+    const name = `សុវណ្ណ User ${id}`;
     const amount = Math.round(Math.random() * 5000 * 100) / 100; // 0–5000, 2 decimals
     const date = new Date(2025, 0, 1 + i).toISOString().slice(0, 10); // 100 sequential days from Jan 1, 2025
     return { id, name, amount, date };
@@ -38,7 +38,7 @@ export class ReportsComponent {
 
   exportPDF() {
     this.exportService.exportPdf(this.rows, this.cols, {
-      title: 'Sales Report',
+      title: 'មក Sales Report',
       subtitle: 'Branch: Phnom Penh',
       signatures: {
         titles: ['Prepared By', 'Checked By', 'Approved By'],
@@ -49,7 +49,7 @@ export class ReportsComponent {
       logoBase64: this.logo,
       pdf: {
         headFillColor: [230, 236, 255],
-        font: 'helvetica',
+        font: 'battambang',
         orientation: 'p', // l for landscape, p for portrait
       },
       filename: 'sales-report',
