@@ -36,11 +36,10 @@ export type ReportOptions = {
     borderColor?: string; // e.g. 'FFBFBFBF'
   };
   signatures?: {
-    leftTitle?: string; // default: "Prepared by"
-    rightTitle?: string; // default: "Approved by"
-    leftName?: string; // optional preset name
-    rightName?: string; // optional preset name
-    showDate?: boolean; // default: true
+    titles?: [string, string, string]; // default: ["Prepared By","Checked By","Approved By"]
+    names?: [string?, string?, string?]; // optional preset names under the lines
+    positions?: [string?, string?, string?]; // optional preset positions
+    showDate?: boolean; // default: true (adds "Date : ______")
   };
 };
 
@@ -65,34 +64,56 @@ export class ReportExportService {
     //   doc.setFont(KHMER_FONT_FAMILY);
     // } catch {}
 
-    const pageWidth = doc.internal.pageSize.getWidth();
-
     // Header: Logo + Title + Date
     let cursorY = 12;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const centerX = pageWidth / 2;
+
     if (opts.logoBase64) {
       // draw logo at left, height ~ 14
-      doc.addImage(opts.logoBase64, 'PNG', 10, 10, 18, 18);
-      // title to the right
+      doc.addImage(opts.logoBase64, 'PNG', 10, 5, 28, 28);
+
+      // Title centered
       doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
       doc.setFontSize(14);
-      doc.text(opts.title, 32, 16);
+      doc.text(opts.title, centerX, 16, { align: 'center' });
+
+      // Date centered below
       doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
       doc.setFontSize(10);
-      doc.text(`Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`, 32, 22);
-      if (opts.subtitle) doc.text(opts.subtitle, 32, 28);
+      doc.text(`Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`, centerX, 22, {
+        align: 'center',
+      });
+
+      if (opts.subtitle) {
+        doc.text(opts.subtitle, centerX, 28, { align: 'center' });
+      }
+
       cursorY = 34;
     } else {
+      // Title centered
       doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
       doc.setFontSize(14);
-      doc.text(opts.title, 10, cursorY);
+      doc.text(opts.title, centerX, cursorY, { align: 'center' });
       cursorY += 6;
+
+      // Date centered
       doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
       doc.setFontSize(10);
-      doc.text(`Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`, 10, cursorY);
+      doc.text(
+        `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`,
+        centerX,
+        cursorY,
+        {
+          align: 'center',
+        }
+      );
+
       if (opts.subtitle) {
         cursorY += 6;
-        doc.text(opts.subtitle, 10, cursorY);
+        doc.text(opts.subtitle, centerX, cursorY, { align: 'center' });
       }
+
       cursorY += 6;
     }
 
@@ -125,60 +146,126 @@ export class ReportExportService {
           data.cell.styles.halign = align;
         }
       },
-      margin: { left: 10, right: 10 },
-      // Footer with page numbers
+      margin: { left: 10, right: 10, top: 35 },
+
       didDrawPage: (data: any) => {
-        const page = doc.getNumberOfPages();
-        const str = `Page ${page}`;
+        // ===== HEADER =====
+        if (opts.logoBase64) {
+          doc.addImage(opts.logoBase64, 'PNG', 10, 5, 28, 28);
+        }
+
+        doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text(opts.title, centerX, 16, { align: 'center' });
+
+        doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text(
+          `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`,
+          centerX,
+          22,
+          {
+            align: 'center',
+          }
+        );
+
+        if (opts.subtitle) {
+          doc.text(opts.subtitle, centerX, 28, { align: 'center' });
+        }
+
+        // ===== FOOTER =====
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const page = (doc as any).getNumberOfPages();
         doc.setFontSize(9);
-        doc.text(str, pageWidth - 10, doc.internal.pageSize.getHeight() - 6, {
+        doc.text(`Page ${page}`, pageWidth - 10, pageHeight - 6, {
           align: 'right',
         });
       },
     });
 
-    // --- Signatures (PDF) ---
-    const lt = (doc as any).lastAutoTable; // provided by jspdf-autotable
-    const afterTableY = (lt?.finalY ?? 0) + 12;
+    // === Signatures (PDF, 3 blocks) ===
+    const lt = (doc as any).lastAutoTable;
+    let y = (lt?.finalY ?? 0) + 12;
 
-    const marginL = 10;
-    const marginR = 10;
-    const gap = 40;
+    const pageW = doc.internal.pageSize.getWidth();
     const pageH = doc.internal.pageSize.getHeight();
-    const leftTitle = opts.signatures?.leftTitle ?? 'Prepared by';
-    const rightTitle = opts.signatures?.rightTitle ?? 'Approved by';
-    const leftName = opts.signatures?.leftName ?? '';
-    const rightName = opts.signatures?.rightName ?? '';
+    const marginL = 20;
+    const marginR = 20;
+    const gap = 20; // space between blocks
+
+    const titles = opts.signatures?.titles ?? [
+      'Prepared By',
+      'Checked By',
+      'Approved By',
+    ];
+    const presetNames = opts.signatures?.names ?? ['', '', ''];
+    const presetPositions = opts.signatures?.positions ?? ['', '', ''];
     const showDate = opts.signatures?.showDate ?? true;
 
-    // compute blocks
-    const pageW = doc.internal.pageSize.getWidth();
     const usableW = pageW - marginL - marginR;
-    const blockW = (usableW - gap) / 2;
-    const blockH = 10; // height area to ensure line + labels fit
-    let y = afterTableY;
+    const blockW = (usableW - 2 * gap) / 3;
+    const blockH = 50; // estimated height needed
 
-    // page break if too close to bottom
+    // page break if needed
     if (y + blockH + 10 > pageH) {
       doc.addPage();
       y = 20;
     }
 
-    // left block
-    const leftX = marginL;
     doc.setFontSize(10);
-    doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
-    doc.text(leftTitle, leftX, y);
-    doc.line(leftX, y + 13, leftX + blockW, y + 13); // signature line
-    if (leftName) doc.text(leftName, leftX, y + 10);
-    if (showDate) doc.text('Date: __________________', leftX, y + 25);
 
-    // right block
-    const rightX = marginL + blockW + gap;
-    doc.text(rightTitle, rightX, y);
-    doc.line(rightX, y + 13, rightX + blockW, y + 13); // signature line
-    if (rightName) doc.text(rightName, rightX, y + 10);
-    if (showDate) doc.text('Date: __________________', rightX, y + 25);
+    // helper to draw one block at x
+    const drawBlock = (x: number, idx: number) => {
+      const title = titles[idx];
+      const namePreset = presetNames[idx] || '';
+      const posPreset = presetPositions[idx] || '';
+
+      // Title (bold + center)
+      doc.setFont(opts.pdf?.font ?? 'helvetica', 'bold');
+      doc.text(title, x + blockW / 2, y, { align: 'center' });
+
+      // lines and labels
+      doc.setFont(opts.pdf?.font ?? 'helvetica', 'normal');
+      const row1Y = y + 25;
+      const row2Y = y + 30;
+      const row3Y = y + 35;
+
+      const label1 = 'Name :';
+      const label2 = 'Position :';
+      const label3 = 'Date :';
+
+      const pad = 2; // small padding after label before the line
+      const tw1 = doc.getTextWidth(label1) + pad;
+      const tw2 = doc.getTextWidth(label2) + pad;
+      const tw3 = doc.getTextWidth(label3) + pad;
+
+      (doc as any).setLineDash([0.5, 1], 0); // dotted
+
+      // Name
+      doc.text(label1, x, row1Y);
+      doc.line(x + tw1, row1Y, x + blockW - 2, row1Y);
+      if (namePreset) doc.text(namePreset, x + tw1 + 1, row1Y - 0.5);
+
+      // Position
+      doc.text(label2, x, row2Y);
+      doc.line(x + tw2, row2Y, x + blockW - 2, row2Y);
+      if (posPreset) doc.text(posPreset, x + tw2 + 1, row2Y - 0.5);
+
+      // Date
+      if (showDate) {
+        doc.text(label3, x, row3Y);
+        doc.line(x + tw3, row3Y, x + blockW - 2, row3Y);
+      }
+      (doc as any).setLineDash([], 0); // reset to solid after signatures
+    };
+
+    // draw 3 blocks
+    const x1 = marginL;
+    const x2 = marginL + blockW + gap;
+    const x3 = marginL + 2 * (blockW + gap);
+    drawBlock(x1, 0);
+    drawBlock(x2, 1);
+    drawBlock(x3, 2);
 
     doc.save(filename);
   }
@@ -228,9 +315,10 @@ export class ReportExportService {
     };
     sheet.mergeCells(`${dateMerge.from}:${dateMerge.to}`);
     const dateCell = sheet.getCell(dateMerge.from);
-    dateCell.value = `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`;
+    // dateCell.value = `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`;
+    dateCell.value = `Date: ${dayjs(now)}`;
     dateCell.font = { size: 10 };
-    dateCell.alignment = { vertical: 'middle', horizontal: 'right' };
+    dateCell.alignment = { vertical: 'middle', horizontal: 'center' };
 
     if (opts.subtitle) {
       const subRowIdx = dateRowIdx + 1;
@@ -242,7 +330,7 @@ export class ReportExportService {
       const subCell = sheet.getCell(subMerge.from);
       subCell.value = opts.subtitle;
       subCell.font = { size: 10 };
-      subCell.alignment = { vertical: 'middle', horizontal: 'right' };
+      subCell.alignment = { vertical: 'middle', horizontal: 'center' };
       tableStartRow = Math.max(tableStartRow, subRowIdx + 1);
     }
 
@@ -320,107 +408,6 @@ export class ReportExportService {
 
     // Freeze header
     sheet.views = [{ state: 'frozen', ySplit: tableStartRow }];
-
-    // --- Signatures (Excel) ---
-    const leftTitle = opts.signatures?.leftTitle ?? 'Prepared by';
-    const rightTitle = opts.signatures?.rightTitle ?? 'Approved by';
-    const leftName = opts.signatures?.leftName ?? '';
-    const rightName = opts.signatures?.rightName ?? '';
-    const showDate = opts.signatures?.showDate ?? true;
-
-    // figure out last data row
-    const dataStart = tableStartRow + 1; // first row after header
-    const dataEndRow = dataStart + rows.length - 1;
-    let sigRow = (rows.length ? dataEndRow : tableStartRow) + 2; // one blank row
-
-    // split columns into two halves
-    const totalCols = cols.length;
-    const mid = Math.floor(totalCols / 2) || 1;
-
-    // Ranges: A..mid  |  (mid+1)..totalCols
-    const leftFrom = 'A' + sigRow;
-    const leftTo = this.colLetter(mid) + sigRow;
-    const leftLineRow = sigRow + 2;
-
-    const rightFrom = this.colLetter(mid + 1) + sigRow;
-    const rightTo = this.colLetter(totalCols) + sigRow;
-    const rightLineRow = sigRow + 2;
-
-    // Titles row
-    sheet.mergeCells(`${leftFrom}:${leftTo}`);
-    sheet.mergeCells(`${rightFrom}:${rightTo}`);
-    sheet.getCell(leftFrom).value = leftTitle;
-    sheet.getCell(rightFrom).value = rightTitle;
-
-    sheet.getCell(leftFrom).alignment = {
-      vertical: 'middle',
-      horizontal: 'left',
-    };
-    sheet.getCell(rightFrom).alignment = {
-      vertical: 'middle',
-      horizontal: 'left',
-    };
-    sheet.getCell(leftFrom).font = { bold: true };
-    sheet.getCell(rightFrom).font = { bold: true };
-
-    // blank spacer row (sigRow+1)
-    sigRow += 1;
-
-    // "signature line" row (bottom border on merged ranges)
-    const leftLineFrom = 'A' + (sigRow + 1);
-    const leftLineTo = this.colLetter(mid) + (sigRow + 1);
-    const rightLineFrom = this.colLetter(mid + 1) + (sigRow + 1);
-    const rightLineTo = this.colLetter(totalCols) + (sigRow + 1);
-
-    sheet.mergeCells(`${leftLineFrom}:${leftLineTo}`);
-    sheet.mergeCells(`${rightLineFrom}:${rightLineTo}`);
-
-    const lineColor = opts.excel?.borderColor ?? 'FFBFBFBF';
-    sheet.getCell(leftLineFrom).border = {
-      bottom: { style: 'thin', color: { argb: lineColor } },
-    };
-    sheet.getCell(rightLineFrom).border = {
-      bottom: { style: 'thin', color: { argb: lineColor } },
-    };
-
-    // optional names directly under the line
-    if (leftName) {
-      const c = sheet.getCell('A' + (sigRow + 2));
-      sheet.mergeCells(`A${sigRow + 2}:${this.colLetter(mid)}${sigRow + 2}`);
-      c.value = leftName;
-      c.alignment = { vertical: 'middle', horizontal: 'left' };
-    }
-    if (rightName) {
-      const c = sheet.getCell(this.colLetter(mid + 1) + (sigRow + 2));
-      sheet.mergeCells(
-        `${this.colLetter(mid + 1)}${sigRow + 2}:${this.colLetter(totalCols)}${
-          sigRow + 2
-        }`
-      );
-      c.value = rightName;
-      c.alignment = { vertical: 'middle', horizontal: 'left' };
-    }
-
-    // dates
-    if (showDate) {
-      const dateText = 'Date: __________________';
-      const leftDateCell = sheet.getCell('A' + (sigRow + 3));
-      sheet.mergeCells(`A${sigRow + 3}:${this.colLetter(mid)}${sigRow + 3}`);
-      leftDateCell.value = dateText;
-      leftDateCell.alignment = { vertical: 'middle', horizontal: 'left' };
-
-      const rightDateCell = sheet.getCell(
-        this.colLetter(mid + 1) + (sigRow + 3)
-      );
-      sheet.mergeCells(
-        `${this.colLetter(mid + 1)}${sigRow + 3}:${this.colLetter(totalCols)}${
-          sigRow + 3
-        }`
-      );
-      rightDateCell.value = dateText;
-      rightDateCell.alignment = { vertical: 'middle', horizontal: 'left' };
-    }
-
     const buffer = await workbook.xlsx.writeBuffer();
 
     saveAs(new Blob([buffer], { type: 'application/octet-stream' }), filename);
