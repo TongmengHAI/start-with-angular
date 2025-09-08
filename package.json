@@ -6,8 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "build:vfs": "node ./scripts/build-vfs.mjs ./public/fonts/Noto_Sans_Khmer ./src/app/assets/pdf/fonts/vfs_fonts_khmer.js"
+    "test": "ng test"
   },
   "prettier": {
     "overrides": [
@@ -27,6 +26,7 @@
     "@angular/forms": "^20.1.0",
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
+    "dayjs": "^1.11.18",
     "pdfmake": "^0.2.20",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

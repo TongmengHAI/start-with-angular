@@ -2,6 +2,10 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
+import { getPdfMake } from './shared/pdf/pdf-init';
+
+getPdfMake(); // <-- run before Angular bootstraps components
+
 
 export const appConfig: ApplicationConfig = {
   providers: [

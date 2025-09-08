@@ -12,24 +12,37 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-
 ## Install packages
 
 To start a local development, run:
 
 ```bash
-npm i pdfmake xlsx
+npm i pdfmake xlsx dayjs
 # (optional but handy for types)
 npm i -D @types/pdfmake
 ```
 
+## Add New Fonts
 
-Optional, convert font files from .tiff to .js and can be modify by edit in `package.json` file, then run:
+Download font file `.tff` and store in project folder. Example. `public\fonts\Battambang-Regular.ttf`
 
-```bash
-npm run build:vfs
+Register font families on the SAME host
+
+```js
+const host: any = (window as any).pdfMake;
+// define font name and point to font files
+host.fonts = {
+  Battambang: {
+    normal: `${window.location.origin}/fonts/Battambang-Regular.ttf`,
+    bold: `${window.location.origin}/fonts/Battambang-Bold.ttf`,
+    italics: `${window.location.origin}/fonts/Battambang-Regular.ttf`,
+    bolditalics: `${window.location.origin}/fonts/Battambang-Bold.ttf`,
+    light: `${window.location.origin}/fonts/Battambang-Light.ttf`,
+    thin: `${window.location.origin}/fonts/Battambang-Thin.ttf`,
+    black: `${window.location.origin}/fonts/Battambang-Black.ttf`,
+  },
+};
 ```
-
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
