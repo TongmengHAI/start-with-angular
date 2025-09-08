@@ -67,7 +67,9 @@ For more information on using the Angular CLI, including detailed command refere
 
 # Font Converter
 
-This project allows you to convert `.ttf` font files into Base64 and use them directly in your application.
+This project allows you to convert `.ttf` font files into Base64 and use them directly in your application. 
+
+Note: `jspdf` is not familiar well with `Khmer`( e.,g. សុវណ្ណ​ it shows សុវណណ in PDF)
 
 ## Add New Fonts
 

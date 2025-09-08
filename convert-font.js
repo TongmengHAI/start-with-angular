@@ -21,3 +21,8 @@ toBase64(
   "./public/fonts/battambang/Battambang-Bold.ttf",
   "BATTAMBANG_BOLD_BASE64"
 );
+
+toBase64(
+  "./public/fonts/battambang/Content-TimesNewRoman.otf",
+  "TIMES_NEW_ROMAN_BASE64"
+);

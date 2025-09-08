@@ -13,6 +13,7 @@ import {
   BATTAMBANG_BOLD_BASE64,
   BATTAMBANG_BASE64,
   BATTAMBANG_THIN_BASE64,
+  TIMES_NEW_ROMAN_BASE64,
 } from '../../../assets/fonts/fonts';
 
 export type ColumnDef<T = any> = {
@@ -51,10 +52,13 @@ export type ReportOptions = {
 
 @Injectable({ providedIn: 'root' })
 export class ReportExportService {
-  // =========================================[ API ] =========================================
+  // =========================================[ PDF ] =========================================
   async exportPdf<T>(rows: T[], cols: ColumnDef<T>[], opts: ReportOptions) {
+    await this.ensureFontsReady();
+
     const now = opts.DateAt ?? new Date();
     const filename = (opts.filename ?? this.slugify(opts.title)) + '.pdf';
+    // const hasKhmer = (s: string) => /[\u1780-\u17FF]/.test(s);
 
     const doc = new jsPDF({
       orientation: opts.pdf?.orientation ?? 'p',
@@ -77,9 +81,38 @@ export class ReportExportService {
         'Battambang-Thin.ttf',
         BATTAMBANG_BASE64.split(',')[1]
       );
-      (doc as any).addFont('Battambang-Bold.ttf', 'battambang', 'bold');
-      (doc as any).addFont('Battambang-Regular.ttf', 'battambang', 'normal');
-      (doc as any).addFont('Battambang-Thin.ttf', 'battambang', 'thin');
+      (doc as any).addFileToVFS(
+        'Content-TimesNewRoman.otf',
+        TIMES_NEW_ROMAN_BASE64.split(',')[1]
+      );
+      (doc as any).addFont(
+        'Battambang-Bold.ttf',
+        'battambang',
+        'bold',
+        undefined, // fontWeight
+        'Identity-H'
+      );
+      (doc as any).addFont(
+        'Battambang-Regular.ttf',
+        'battambang',
+        'normal',
+        undefined, // fontWeight
+        'Identity-H'
+      );
+      (doc as any).addFont(
+        'Battambang-Thin.ttf',
+        'battambang',
+        'thin',
+        undefined, // fontWeight
+        'Identity-H'
+      );
+      (doc as any).addFont(
+        'Content-TimesNewRoman.otf',
+        'timesNewRoman',
+        'normal',
+        undefined, // fontWeight
+        'Identity-H'
+      );
     } catch {}
 
     // Header: Logo + Title + Date
@@ -92,19 +125,19 @@ export class ReportExportService {
       doc.addImage(opts.logoBase64, 'PNG', 10, 5, 28, 28);
 
       // Title centered
-      doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+      doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'bold');
       doc.setFontSize(24);
       doc.text(opts.title, centerX, 16, { align: 'center' });
 
       // Date centered below
-      doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+      doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
       doc.setFontSize(14);
       doc.text(`Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`, centerX, 22, {
         align: 'center',
       });
 
       if (opts.subtitle) {
-        doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+        doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
         doc.setFontSize(11);
         doc.text(opts.subtitle, centerX, 28, { align: 'center' });
       }
@@ -112,13 +145,13 @@ export class ReportExportService {
       cursorY = 34;
     } else {
       // Title centered
-      doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+      doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'bold');
       doc.setFontSize(14);
       doc.text(opts.title, centerX, cursorY, { align: 'center' });
       cursorY += 6;
 
       // Date centered
-      doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+      doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
       doc.setFontSize(14);
       doc.text(
         `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`,
@@ -131,7 +164,7 @@ export class ReportExportService {
 
       if (opts.subtitle) {
         cursorY += 6;
-        doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+        doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
         doc.setFontSize(11);
         doc.text(opts.subtitle, centerX, cursorY, { align: 'center' });
       }
@@ -145,13 +178,14 @@ export class ReportExportService {
     const body: AutoTableRow[] = rows.map((r) =>
       cols.map((c) => this.cellValue(r, c.key))
     );
+    doc.setLanguage('km');
 
     autoTable(doc, {
       startY: cursorY,
       head,
       body,
       styles: {
-        font: opts.pdf?.font ?? 'Times',
+        font: opts.pdf?.font ?? 'timesNewRoman',
         fontSize: 11,
         cellPadding: 2,
       },
@@ -166,6 +200,7 @@ export class ReportExportService {
           const idx = data.column.index;
           const align = cols[idx]?.align ?? 'left';
           data.cell.styles.halign = align;
+
         }
       },
       margin: { left: 10, right: 10, top: 35 },
@@ -176,11 +211,11 @@ export class ReportExportService {
           doc.addImage(opts.logoBase64, 'PNG', 10, 5, 28, 28);
         }
 
-        doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+        doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'bold');
         doc.setFontSize(24);
         doc.text(opts.title, centerX, 16, { align: 'center' });
 
-        doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+        doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
         doc.setFontSize(14);
         doc.text(
           `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`,
@@ -192,7 +227,7 @@ export class ReportExportService {
         );
 
         if (opts.subtitle) {
-          doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+          doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
           doc.setFontSize(11);
           doc.text(opts.subtitle, centerX, 28, { align: 'center' });
         }
@@ -201,8 +236,8 @@ export class ReportExportService {
         const pageHeight = doc.internal.pageSize.getHeight();
         const page = (doc as any).getNumberOfPages();
         doc.setFontSize(9);
-        doc.text(`Page ${page}`, pageWidth - 10, pageHeight - 6, {
-          align: 'right',
+        doc.text(`Page ${page}`, centerX, pageHeight - 6, {
+          align: 'left',
         });
       },
     });
@@ -237,7 +272,7 @@ export class ReportExportService {
     }
 
     doc.setFontSize(11);
-    doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+    doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'bold');
 
     // helper to draw one block at x
     const drawBlock = (x: number, idx: number) => {
@@ -246,11 +281,11 @@ export class ReportExportService {
       const posPreset = presetPositions[idx] || '';
 
       // Title (bold + center)
-      doc.setFont(opts.pdf?.font ?? 'Times', 'bold');
+      doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'bold');
       doc.text(title, x + blockW / 2, y, { align: 'center' });
 
       // lines and labels
-      // doc.setFont(opts.pdf?.font ?? 'Times', 'normal');
+      // doc.setFont(opts.pdf?.font ?? 'timesNewRoman', 'normal');
       const row1Y = y + 25;
       const row2Y = y + 30;
       const row3Y = y + 35;
