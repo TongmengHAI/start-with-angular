@@ -58,17 +58,47 @@ export class ReportService {
     const pdfMake: any = getPdfMake(); // always get the canonical instance
 
     const now = opts.DateAt ?? new Date();
-    const dateStr = `Date: ${dayjs(now).format('YYYY-MM-DD HH:mm')}`;
+    const dateStr = `Date: ${dayjs(now).format('DD-MM-YYYY HH:mm')}`;
     const filename = (opts.filename ?? this.slugify(opts.title)) + '.pdf';
 
     // Table data
     const body = [
-      cols.map((c) => ({ text: c.header, bold: true, alignment: 'center' })) as any,
+      cols.map((c) => ({
+        text: c.header,
+        bold: true,
+        alignment: 'center',
+      })) as any,
       ...rows.map((r) =>
         cols.map((c) => {
-          const v = this.cellValue(r, c.key);
-          const align = c.align ?? 'left';
-          return { text: v, alignment: align };
+          let v = this.cellValue(r, c.key);
+
+          // Amount: $ right-aligned number, tight padding
+          if (c.key === 'amount') {
+            const formatted = Number(v).toLocaleString('en-US', {
+              minimumFractionDigits: 6,
+            });
+            return {
+              // columns render inline without table borders/padding
+              columns: [
+                {
+                  text: '$',
+                  width: 12,
+                  alignment: 'left',
+                  margin: [0, 0, 2, 0],
+                },
+                { text: formatted, width: '*', alignment: 'right' },
+              ],
+              // kill any extra paddings from the parent table cell
+              margin: [0, 0, 0, 0],
+            };
+          }
+
+          // Date formatting
+          if (c.key === 'date') {
+            v = dayjs(v).format('DD-MM-YYYY HH:mm');
+          }
+
+          return { text: v, alignment: c.align ?? 'left' };
         })
       ),
     ];
@@ -94,7 +124,16 @@ export class ReportService {
         // Name
         {
           columns: [
-            { text: 'Name :', width: 'auto', margin: [(opts.pdf?.orientation ?? 'p') === 'l' ? 50 : 20, 2, 2, 0] },
+            {
+              text: 'Name :',
+              width: 'auto',
+              margin: [
+                (opts.pdf?.orientation ?? 'p') === 'l' ? 50 : 20,
+                2,
+                2,
+                0,
+              ],
+            },
             {
               width: '*',
               columns: [
@@ -124,7 +163,16 @@ export class ReportService {
         // Position
         {
           columns: [
-            { text: 'Position :', width: 'auto', margin: [(opts.pdf?.orientation ?? 'p') === 'l' ? 50 : 20, 2, 2, 0] },
+            {
+              text: 'Position :',
+              width: 'auto',
+              margin: [
+                (opts.pdf?.orientation ?? 'p') === 'l' ? 50 : 20,
+                2,
+                2,
+                0,
+              ],
+            },
             {
               width: '*',
               columns: [
@@ -156,7 +204,12 @@ export class ReportService {
             {
               text: 'Date :',
               width: 'auto',
-              margin: [(opts.pdf?.orientation ?? 'p') === 'l' ? 50 : 20, 2, 2, 0],
+              margin: [
+                (opts.pdf?.orientation ?? 'p') === 'l' ? 50 : 20,
+                2,
+                2,
+                0,
+              ],
             },
             {
               width: '*',

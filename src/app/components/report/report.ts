@@ -44,12 +44,6 @@ export class ReportComponent {
   ];
 
   // Sample row data
-  // pdfRows = [
-  //   { id: 1, name: 'សុវណ្ណ User 1', amount: 1200.5, date: '2025-09-05' },
-  //   { id: 2, name: 'សុវណ្ណ User 2', amount: 300.0, date: '2025-09-06' },
-  //   { id: 3, name: 'John Doe', amount: 450.75, date: '2025-09-07' },
-  //   { id: 4, name: 'សុវណ្ណ User 4', amount: 999.99, date: '2025-09-08' },
-  // ];
 
   pdfRows: Row[] = Array.from({ length: 100 }, (_, i) => {
     const id = i + 1;
