@@ -54,7 +54,6 @@ export type ReportOptions = {
 export class ReportExportService {
   // =========================================[ PDF ] =========================================
   async exportPdf<T>(rows: T[], cols: ColumnDef<T>[], opts: ReportOptions) {
-    await this.ensureFontsReady();
 
     const now = opts.DateAt ?? new Date();
     const filename = (opts.filename ?? this.slugify(opts.title)) + '.pdf';
